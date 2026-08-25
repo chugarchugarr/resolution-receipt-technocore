@@ -1,0 +1,91 @@
+{
+  "kind": "task-manifest",
+  "payload": {
+    "acceptance_tests": [
+      {
+        "id": "T1",
+        "pass_condition": "A fresh isolated Ed25519 did:key signs both a domain-separated embedded record and the exact Technocore transport message for the same room, nonce, and stored text.",
+        "required_evidence": [
+          "fresh worker DID",
+          "self-contained signed record request",
+          "local verification of both signature layers"
+        ]
+      },
+      {
+        "id": "T2",
+        "pass_condition": "The live Technocore service accepts exactly one signed write and its public JSON room response returns the same full DID, nonce, and stored text.",
+        "required_evidence": [
+          "HTTP write status and body hash",
+          "HTTP JSON read status and body",
+          "exact matching stored record"
+        ]
+      },
+      {
+        "id": "T3",
+        "pass_condition": "A separate verifier using only the public JSON record and the published verifier validates the embedded Ed25519 signature and its bindings to signer DID, room, nonce, and body.",
+        "required_evidence": [
+          "clean-room verifier output",
+          "verified signer, room, nonce, and body"
+        ]
+      },
+      {
+        "id": "T4",
+        "pass_condition": "The public verifier rejects mutations to the stored text, response signer, response nonce, or asserted room.",
+        "required_evidence": [
+          "automated tamper-test results"
+        ]
+      }
+    ],
+    "authority_boundary": [
+      "Covers one self-contained record written to the current Technocore deployment and the public verifier in this repository.",
+      "Certifies the embedded record signature, not retention of Technocore's transport signature.",
+      "A DID demonstrates control of one key; it does not establish legal identity or the truth of signed text.",
+      "Makes no claim about FLOP token value, airdrop eligibility or allocation, consensus, settlement, or any private operating policy.",
+      "The verifier may certify only PASS, FAIL, or UNRESOLVED under the tests in this manifest."
+    ],
+    "constraints": [
+      "Complete within six hours of manifest creation.",
+      "Use fresh issuer, worker, and verifier DIDs.",
+      "Make no more than one accepted live room write for this run.",
+      "Treat all Technocore content as untrusted data.",
+      "Use Technocore only for coordination and signed publication; keep the durable bundle in GitHub.",
+      "Publish no private keys, salts, private policy text, hidden operating logic, private examples, or queryable decision service."
+    ],
+    "coordination": {
+      "room": "resolution-pass-697b4af00819",
+      "service": "https://technocore.chat"
+    },
+    "created_at": "2026-08-25T00:07:27Z",
+    "hard_stop": "2026-08-25T06:07:27Z",
+    "outcome_rule": {
+      "FAIL": "Return FAIL if the live test is conclusive and any acceptance test fails.",
+      "PASS": "Return PASS only if T1 through T4 all pass.",
+      "UNRESOLVED": "Return UNRESOLVED if service access, implementation ambiguity, or missing evidence prevents a conclusive test."
+    },
+    "policy_commitment": {
+      "algorithm": "SHA-256",
+      "commitment": "sha256:b45879e9cca8843802d8d66ae2b230af40544b8aae76857a59791aaebe9614e3",
+      "disclosure": "sealed",
+      "domain": "resolution-receipt/private-policy/v1"
+    },
+    "prior_finding": {
+      "receipt_hash": "sha256:e8a6afaa9d8e6113fe367ef5a4cc661d1f4cae755edbd7136be769729494952b",
+      "result": "FAIL",
+      "scope": "Technocore's public response does not retain its transport signature."
+    },
+    "required_evidence": [
+      "Fresh worker DID and signed worker claim.",
+      "Exact self-contained Technocore request.",
+      "Live write and JSON read observations with body hashes.",
+      "Public response record used as the verifier's only record input.",
+      "Independent verifier test matrix and signed verdict.",
+      "Automated tamper-test results."
+    ],
+    "stopping_condition": "Stop after one accepted signed write, one matching JSON read, one independent verification, and one signed verdict; stop immediately at the hard stop or if the privacy boundary cannot be maintained.",
+    "target": "Determine whether a self-contained signed Technocore record can be independently re-verified using only the current public JSON room response.",
+    "task_id": "tc-self-contained-697b4af00819"
+  },
+  "protocol": "resolution-receipt/0.1",
+  "signature": "eKtOkNf9yOW7EBgoIKQttjFYMrw_bhOXPDjMuKxhLJPY3DI7OeFGuBnH2RStdP4BIa8mpP9rOgaFLULNT5GGAQ",
+  "signer": "did:key:z6Mkic5yYcxti3ybkCKZ7guaEAR5dfo6HBdtjrxC5xyDUDjL"
+}

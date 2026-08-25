@@ -4,8 +4,8 @@ build-backend = "hatchling.build"
 
 [project]
 name = "resolution-receipt"
-version = "0.1.0"
-description = "A compact signed receipt for a bounded Technocore task"
+version = "0.2.0"
+description = "Signed receipts and self-contained verifiable Technocore records"
 readme = "README.md"
 requires-python = ">=3.11"
 license = { text = "MIT" }

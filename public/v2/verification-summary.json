@@ -1,0 +1,8 @@
+{
+  "bundle_integrity": "PASS",
+  "certified_exit": "PASS",
+  "prior_certified_exit": "FAIL",
+  "receipt_hash": "sha256:0249a7821641b502445bf6bee3dd305d65f01fea8fffc994355d16582ff39f61",
+  "release_attestation_hash": "sha256:51a175e8facdd8982e75dfc50f6f650f588372a940ee14f9b1d850f2d28159c6",
+  "task_id": "tc-self-contained-697b4af00819"
+}

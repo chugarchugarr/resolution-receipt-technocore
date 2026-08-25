@@ -25,6 +25,9 @@ from cryptography.hazmat.primitives.asymmetric.ed25519 import (
 PROTOCOL = "resolution-receipt/0.1"
 POLICY_DOMAIN = b"resolution-receipt/private-policy/v1\x00"
 SIGNATURE_DOMAIN = b"resolution-receipt/signed-object/v1\n"
+TECHNOCORE_RECORD_KIND = "technocore-record"
+TECHNOCORE_RECORD_PREFIX = "rr1."
+TECHNOCORE_TEXT_LIMIT = 4096
 ED25519_MULTICODEC = b"\xed\x01"
 BASE58_ALPHABET = b"123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz"
 OUTCOMES = {"PASS", "FAIL", "UNRESOLVED"}
@@ -138,9 +141,12 @@ def _b64url_decode(value: str) -> bytes:
         raise ReceiptError("invalid base64url value")
     padding = "=" * (-len(value) % 4)
     try:
-        return base64.b64decode(value + padding, altchars=b"-_", validate=True)
+        decoded = base64.b64decode(value + padding, altchars=b"-_", validate=True)
     except ValueError as exc:
         raise ReceiptError("invalid base64url value") from exc
+    if _b64url_encode(decoded) != value:
+        raise ReceiptError("non-canonical base64url value")
+    return decoded
 
 
 def _base58_encode(value: bytes) -> str:
@@ -320,10 +326,7 @@ def create_policy_commitment(
 def technocore_request(
     *, room: str, nonce: str, text: str, key_path: str | os.PathLike[str]
 ) -> dict[str, str]:
-    if not re.fullmatch(r"[A-Za-z0-9_-]{1,48}", room):
-        raise ReceiptError("Technocore room must use 1-48 URL-safe characters")
-    if not re.fullmatch(r"[0-9]{1,19}", nonce):
-        raise ReceiptError("Technocore nonce must use 1-19 decimal digits")
+    _validate_technocore_coordinates(room, nonce)
     if not text or "|" in room:
         raise ReceiptError("invalid Technocore message")
     private_key, did = _load_private_key(key_path)
@@ -334,6 +337,87 @@ def technocore_request(
         "sig": _b64url_encode(private_key.sign(message)),
         "text": text,
     }
+
+
+def _validate_technocore_coordinates(room: Any, nonce: Any) -> None:
+    if not isinstance(room, str) or not re.fullmatch(r"[A-Za-z0-9_-]{1,48}", room):
+        raise ReceiptError("Technocore room must use 1-48 URL-safe characters")
+    if not isinstance(nonce, str) or not re.fullmatch(r"[0-9]{1,19}", nonce):
+        raise ReceiptError("Technocore nonce must use 1-19 decimal digits")
+
+
+def technocore_record_request(
+    *, room: str, nonce: str, body: str, key_path: str | os.PathLike[str]
+) -> dict[str, str]:
+    """Create a transport request whose stored text remains independently verifiable.
+
+    Technocore currently validates its transport signature but does not return that
+    signature on read. This request embeds a second, domain-separated signed envelope
+    in the text that Technocore does preserve. The embedded payload binds the human
+    body to the room and nonce; the same DID signs both layers.
+    """
+    _validate_technocore_coordinates(room, nonce)
+    if not isinstance(body, str) or not body:
+        raise ReceiptError("Technocore record body must be a non-empty string")
+    envelope = sign_envelope(
+        TECHNOCORE_RECORD_KIND,
+        {"body": body, "nonce": nonce, "room": room},
+        key_path,
+    )
+    text = TECHNOCORE_RECORD_PREFIX + _b64url_encode(canonical_bytes(envelope))
+    if len(text) > TECHNOCORE_TEXT_LIMIT:
+        raise ReceiptError("embedded Technocore record exceeds the text limit")
+    return technocore_request(room=room, nonce=nonce, text=text, key_path=key_path)
+
+
+def decode_technocore_record_text(text: Any) -> dict[str, str]:
+    """Decode and verify one self-contained signed Technocore text value."""
+    if not isinstance(text, str) or not text.startswith(TECHNOCORE_RECORD_PREFIX):
+        raise ReceiptError("missing embedded Technocore record prefix")
+    raw = _b64url_decode(text[len(TECHNOCORE_RECORD_PREFIX) :])
+    try:
+        envelope = json.loads(
+            raw.decode("utf-8"),
+            object_pairs_hook=_reject_duplicate_pairs,
+            parse_float=_reject_float,
+            parse_constant=_reject_constant,
+        )
+    except (UnicodeDecodeError, json.JSONDecodeError) as exc:
+        raise ReceiptError("invalid embedded Technocore record JSON") from exc
+    validate_json(envelope)
+    payload = verify_envelope(envelope, expected_kind=TECHNOCORE_RECORD_KIND)
+    if not isinstance(payload, dict) or set(payload) != {"body", "nonce", "room"}:
+        raise ReceiptError("embedded Technocore record has invalid payload fields")
+    _validate_technocore_coordinates(payload["room"], payload["nonce"])
+    if not isinstance(payload["body"], str) or not payload["body"]:
+        raise ReceiptError("embedded Technocore record body is invalid")
+    return {
+        "body": payload["body"],
+        "nonce": payload["nonce"],
+        "room": payload["room"],
+        "signer": envelope["signer"],
+    }
+
+
+def verify_technocore_record(*, room: str, record: Any) -> dict[str, str]:
+    """Verify a stored record using only one public Technocore JSON record."""
+    if not isinstance(record, dict):
+        raise ReceiptError("Technocore response record must be a JSON object")
+    required = {"from", "nonce", "text"}
+    if not required.issubset(record):
+        raise ReceiptError("Technocore response record is missing required fields")
+    response_nonce = record["nonce"]
+    if isinstance(response_nonce, bool) or not isinstance(response_nonce, (int, str)):
+        raise ReceiptError("Technocore response nonce is invalid")
+    response_nonce_text = str(response_nonce)
+    decoded = decode_technocore_record_text(record["text"])
+    if decoded["room"] != room:
+        raise ReceiptError("embedded room does not match the response room")
+    if decoded["nonce"] != response_nonce_text:
+        raise ReceiptError("embedded nonce does not match the response nonce")
+    if decoded["signer"] != record["from"]:
+        raise ReceiptError("embedded signer does not match the response signer")
+    return decoded
 
 
 def verify_technocore_request(*, room: str, request: Any) -> bool:

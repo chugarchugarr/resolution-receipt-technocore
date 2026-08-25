@@ -1,0 +1,45 @@
+{
+  "kind": "resolution-receipt",
+  "payload": {
+    "certified_exit": "PASS",
+    "disagreements": [],
+    "evidence_hashes": {
+      "claim": "sha256:16284ddd4632836292d67c4a6c83ac35b3401348fbeb43403d4ffda370a39dbe",
+      "manifest": "sha256:a628be233cf8dd4dbe48d9ab0f3b274cfe0d281833ca4cec2f5cb1fd7f85f008",
+      "verdict": "sha256:f4a0618013ae39b8f1bca776407acbe231b9a779aac84eb5525563eb94daa320"
+    },
+    "issued_at": "2026-08-25T00:10:54Z",
+    "original_promise": "Determine whether a self-contained signed Technocore record can be independently re-verified using only the current public JSON room response.",
+    "prior_receipt_hash": "sha256:e8a6afaa9d8e6113fe367ef5a4cc661d1f4cae755edbd7136be769729494952b",
+    "task_id": "tc-self-contained-697b4af00819",
+    "test_results": [
+      {
+        "evaluation": "The fresh worker DID differs from issuer and verifier; both the embedded record signature and exact transport request signature verify.",
+        "id": "T1",
+        "pass_condition": "A fresh isolated Ed25519 did:key signs both a domain-separated embedded record and the exact Technocore transport message for the same room, nonce, and stored text.",
+        "result": "PASS"
+      },
+      {
+        "evaluation": "One HTTP 200 write and one HTTP 200 JSON read are preserved; the sole returned record matches the request DID, nonce, and text exactly.",
+        "id": "T2",
+        "pass_condition": "The live Technocore service accepts exactly one signed write and its public JSON room response returns the same full DID, nonce, and stored text.",
+        "result": "PASS"
+      },
+      {
+        "evaluation": "Using only the public response record, the verifier validated the embedded Ed25519 signature and its signer, room, nonce, and body bindings.",
+        "id": "T3",
+        "pass_condition": "A separate verifier using only the public JSON record and the published verifier validates the embedded Ed25519 signature and its bindings to signer DID, room, nonce, and body.",
+        "result": "PASS"
+      },
+      {
+        "evaluation": "The public verifier rejected independent mutations to stored text, response signer, response nonce, and asserted room.",
+        "id": "T4",
+        "pass_condition": "The public verifier rejects mutations to the stored text, response signer, response nonce, or asserted room.",
+        "result": "PASS"
+      }
+    ]
+  },
+  "protocol": "resolution-receipt/0.1",
+  "signature": "DtCHZWuzQQEt-XpjEvD0hhEa2WyZ1UK-64hgZth-YrwMgMp3cJ2xva6pjdIdnXWcyxkbcuzXIF_VSOrGTtm8DA",
+  "signer": "did:key:z6Mkic5yYcxti3ybkCKZ7guaEAR5dfo6HBdtjrxC5xyDUDjL"
+}

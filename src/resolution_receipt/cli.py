@@ -14,9 +14,11 @@ from .core import (
     hash_object,
     load_json,
     sign_envelope,
+    technocore_record_request,
     technocore_request,
     verify_bundle,
     verify_envelope,
+    verify_technocore_record,
     verify_technocore_request,
     write_json,
 )
@@ -69,6 +71,23 @@ def _parser() -> argparse.ArgumentParser:
     )
     verify_request.add_argument("--room", required=True)
     verify_request.add_argument("--input", required=True)
+
+    record_request = commands.add_parser(
+        "technocore-record-request",
+        help="create a self-contained signed Technocore record request",
+    )
+    record_request.add_argument("--room", required=True)
+    record_request.add_argument("--nonce", required=True)
+    record_request.add_argument("--body", required=True)
+    record_request.add_argument("--key", required=True)
+    record_request.add_argument("--out", required=True)
+
+    verify_record = commands.add_parser(
+        "verify-technocore-record",
+        help="verify one public Technocore JSON record",
+    )
+    verify_record.add_argument("--room", required=True)
+    verify_record.add_argument("--input", required=True)
 
     bundle = commands.add_parser(
         "verify-bundle", help="verify the complete receipt bundle"
@@ -126,6 +145,21 @@ def _run(args: argparse.Namespace) -> None:
         value = load_json(args.input)
         verify_technocore_request(room=args.room, request=value)
         _emit({"did": value["did"], "valid": True})
+    elif args.command == "technocore-record-request":
+        value = technocore_record_request(
+            room=args.room,
+            nonce=args.nonce,
+            body=args.body,
+            key_path=args.key,
+        )
+        write_json(args.out, value)
+        _emit({"did": value["did"], "out": args.out})
+    elif args.command == "verify-technocore-record":
+        result = verify_technocore_record(
+            room=args.room,
+            record=load_json(args.input),
+        )
+        _emit({**result, "valid": True})
     elif args.command == "verify-bundle":
         _emit(
             verify_bundle(

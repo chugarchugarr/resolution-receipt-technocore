@@ -12,9 +12,11 @@ from resolution_receipt.core import (
     load_json,
     policy_commitment,
     sign_envelope,
+    technocore_record_request,
     technocore_request,
     verify_bundle,
     verify_envelope,
+    verify_technocore_record,
     verify_technocore_request,
 )
 
@@ -70,6 +72,66 @@ class CoreTests(unittest.TestCase):
         request["text"] = "tampered"
         with self.assertRaises(ReceiptError):
             verify_technocore_request(room="receipt_demo", request=request)
+
+    def test_self_contained_technocore_record(self) -> None:
+        request = technocore_record_request(
+            room="receipt_demo",
+            nonce="1002",
+            body="bounded result",
+            key_path=self.worker,
+        )
+        self.assertTrue(verify_technocore_request(room="receipt_demo", request=request))
+        record = {
+            "seq": 1,
+            "ts": "2026-08-25T00:00:00Z",
+            "from": request["did"],
+            "nonce": 1002,
+            "text": request["text"],
+        }
+        verified = verify_technocore_record(room="receipt_demo", record=record)
+        self.assertEqual(verified["body"], "bounded result")
+        self.assertEqual(verified["signer"], request["did"])
+
+        tampered = dict(record)
+        tampered["nonce"] = 1003
+        with self.assertRaises(ReceiptError):
+            verify_technocore_record(room="receipt_demo", record=tampered)
+
+        wrong_signer = dict(record)
+        wrong_signer["from"] = sign_envelope(
+            "test-object", {"value": "x"}, self.verifier
+        )["signer"]
+        with self.assertRaises(ReceiptError):
+            verify_technocore_record(room="receipt_demo", record=wrong_signer)
+
+        altered_text = dict(record)
+        altered_text["text"] = request["text"][:-1] + (
+            "A" if request["text"][-1] != "A" else "B"
+        )
+        with self.assertRaises(ReceiptError):
+            verify_technocore_record(room="receipt_demo", record=altered_text)
+
+        for extra in range(3):
+            alias_request = technocore_record_request(
+                room="receipt_demo",
+                nonce="1004",
+                body="canonical encoding" + ("x" * extra),
+                key_path=self.worker,
+            )
+            encoded = alias_request["text"][len("rr1.") :]
+            if len(encoded) % 4 in {2, 3}:
+                break
+        else:
+            self.fail("could not produce an unpadded base64url test value")
+        alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_"
+        alias_index = alphabet.index(encoded[-1]) ^ 1
+        noncanonical = {
+            "from": alias_request["did"],
+            "nonce": 1004,
+            "text": alias_request["text"][:-1] + alphabet[alias_index],
+        }
+        with self.assertRaises(ReceiptError):
+            verify_technocore_record(room="receipt_demo", record=noncanonical)
 
     def test_complete_bundle(self) -> None:
         manifest = sign_envelope(

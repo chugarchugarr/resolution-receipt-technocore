@@ -1,0 +1,45 @@
+{
+  "kind": "worker-claim",
+  "payload": {
+    "created_at": "2026-08-25T00:09:33Z",
+    "evidence_hashes": {
+      "live_read_body": "sha256:f1d79bff471f897bce971830dec7ee6682e0e37affd3fda9cc2bd59698caaf44",
+      "live_write_body": "sha256:64b1c85fd0ca66558156138e6a2b53f90883c90d52279ab09f37a50fe1f1c3b7",
+      "technocore_record": "sha256:dbe5a559a5559064f3b6df66a86c0b0e2befb4ecb431731bf531bcb24878ec93",
+      "technocore_request": "sha256:b5047906a63204f2d33a45a4c3076c917c49d2c0ba6eb37018a72d6c1831eaa4",
+      "worker_evidence": "sha256:c54aa5f9f545346d6e601369f24b843e84fb50dab69fc47d9a788cd20415edb5"
+    },
+    "manifest_hash": "sha256:a628be233cf8dd4dbe48d9ab0f3b274cfe0d281833ca4cec2f5cb1fd7f85f008",
+    "performed_steps": [
+      {
+        "detail": "Verified the signed v2 manifest and its canonical hash.",
+        "step": "verify_signed_manifest"
+      },
+      {
+        "detail": "Used a fresh worker DID to sign the embedded record and Technocore transport request.",
+        "step": "create_dual_signature_request"
+      },
+      {
+        "detail": "Verified both signature layers locally before network use.",
+        "step": "verify_signature_layers"
+      },
+      {
+        "detail": "Made one live write attempt; Technocore returned HTTP 200.",
+        "step": "live_signed_write"
+      },
+      {
+        "detail": "Read the room once as JSON and preserved the sole matching response record.",
+        "step": "live_json_read"
+      },
+      {
+        "detail": "Verified the stored record using only its public JSON fields.",
+        "step": "verify_public_record"
+      }
+    ],
+    "task_id": "tc-self-contained-697b4af00819",
+    "worker_did": "did:key:z6MkjyYttuf11vVLHX8xGVC9uQooGtHGAyt7F8GmBZd6XZHL"
+  },
+  "protocol": "resolution-receipt/0.1",
+  "signature": "lKYfuwKgMZ0uFCxO88whICb6RGrOJqxhn6POLLHHBoCYOYuzGpKqyur8FXws6pqLiCiXf6YiOaoCxAowsS-kBQ",
+  "signer": "did:key:z6MkjyYttuf11vVLHX8xGVC9uQooGtHGAyt7F8GmBZd6XZHL"
+}
