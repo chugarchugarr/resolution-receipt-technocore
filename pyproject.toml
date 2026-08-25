@@ -1,0 +1,26 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "resolution-receipt"
+version = "0.1.0"
+description = "A compact signed receipt for a bounded Technocore task"
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+authors = [{ name = "Joseph Lerma" }]
+dependencies = ["cryptography>=42"]
+
+[project.urls]
+Repository = "https://github.com/chugarchugarr/resolution-receipt-technocore"
+Issues = "https://github.com/chugarchugarr/resolution-receipt-technocore/issues"
+
+[project.scripts]
+resolution-receipt = "resolution_receipt.cli:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/resolution_receipt"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

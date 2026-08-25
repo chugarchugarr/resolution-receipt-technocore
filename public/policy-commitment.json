@@ -1,0 +1,6 @@
+{
+  "algorithm": "SHA-256",
+  "commitment": "sha256:b45879e9cca8843802d8d66ae2b230af40544b8aae76857a59791aaebe9614e3",
+  "disclosure": "sealed",
+  "domain": "resolution-receipt/private-policy/v1"
+}

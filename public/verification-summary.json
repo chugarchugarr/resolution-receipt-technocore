@@ -1,0 +1,12 @@
+{
+  "bundle_integrity": "PASS",
+  "certified_exit": "FAIL",
+  "receipt_hash": "sha256:e8a6afaa9d8e6113fe367ef5a4cc661d1f4cae755edbd7136be769729494952b",
+  "signers": {
+    "issuer": "did:key:z6MkpbhvfusdhihTS4YGkJFqPPaWYgZ3bnfRwYJbAgzy8AqA",
+    "verifier": "did:key:z6MkpS3CkytDVd1wWzShn7hWVe9JczgTvmANqF33QNatebYz",
+    "worker": "did:key:z6MkqDf2nHPqBCk9HMXoWUn1WMeWoaaYs9ZVyQ1qrW1c8aRo"
+  },
+  "task_id": "tc-response-reverify-2332dba3f6ba",
+  "verified_at": "2026-08-24T22:50:33Z"
+}

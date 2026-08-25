@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:resolution-receipt:receipt:0.1",
+  "title": "Resolution Receipt signed object",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["kind", "payload", "protocol", "signature", "signer"],
+  "properties": {
+    "kind": { "const": "resolution-receipt" },
+    "payload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "certified_exit",
+        "disagreements",
+        "evidence_hashes",
+        "issued_at",
+        "original_promise",
+        "task_id",
+        "test_results"
+      ],
+      "properties": {
+        "certified_exit": { "enum": ["PASS", "FAIL", "UNRESOLVED"] },
+        "disagreements": { "type": "array", "items": { "type": "string" } },
+        "evidence_hashes": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["claim", "manifest", "verdict"],
+          "properties": {
+            "claim": { "$ref": "#/$defs/hash" },
+            "manifest": { "$ref": "#/$defs/hash" },
+            "verdict": { "$ref": "#/$defs/hash" }
+          }
+        },
+        "issued_at": { "type": "string", "format": "date-time" },
+        "original_promise": { "type": "string", "minLength": 1 },
+        "task_id": { "type": "string", "minLength": 1 },
+        "test_results": { "type": "array" }
+      }
+    },
+    "protocol": { "const": "resolution-receipt/0.1" },
+    "signature": { "type": "string", "pattern": "^[A-Za-z0-9_-]{86}$" },
+    "signer": { "type": "string", "pattern": "^did:key:z6Mk" }
+  },
+  "$defs": {
+    "hash": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" }
+  }
+}

@@ -1,0 +1,179 @@
+{
+  "claim_hash": "sha256:681ab2dfbd1f3b563b0c129262246d5ba93959862923df7596108bf6529c0af0",
+  "clean_room_t4": {
+    "allowed_input": "The server response preserved as live_read.response.body_utf8 in public/evidence/worker-evidence.json.",
+    "borrowed_worker_request_signature": false,
+    "canonical_message_reconstructable": true,
+    "finding": "The response contains the full DID, integer nonce, and text, but contains neither sig nor signature bytes. Ed25519 verification therefore cannot be executed from the response alone.",
+    "response_record_fields": [
+      "seq",
+      "ts",
+      "from",
+      "text",
+      "nonce"
+    ],
+    "result": "FAIL",
+    "signature_field_present": false
+  },
+  "disagreements": [],
+  "evidence_hashes": {
+    "canonical_json": {
+      "claim": "sha256:681ab2dfbd1f3b563b0c129262246d5ba93959862923df7596108bf6529c0af0",
+      "manifest": "sha256:2e637823f7675abb339019de341f29d176a34bbb04656daec5ed13ea76e94724",
+      "policy_commitment": "sha256:fd42967a11784d7973414f8c275d6ac1aa55cfe6e141406567a9fe897b20002a",
+      "technocore_request": "sha256:c0a56fe3f82ab2d8a82fcb34d6ea6b4800690e26f69f922c262260bdbbccad99",
+      "worker_evidence": "sha256:aa08866b2c2a1bcd7900ede75704253080b190e3a504fddeb19ec0242140e9ad"
+    },
+    "official_source_bytes": {
+      "src/app.py": "sha256:5f074fa47b209d3907d42cd5cd2a2629802b98b9a1ac228988a290068e25da89",
+      "src/didkey.py": "sha256:60d421440e58f79df1700d9784e83fb726c896bd78a2d6991ca28fccf7a6034a",
+      "src/store.py": "sha256:063a1157f8c03633b3ad629002df113f5068e931f677dc8ab8a665611c7e011d"
+    },
+    "raw_http_bodies": {
+      "live_read_body": "sha256:ec02a475f379ebffd626e7685888c52014b8c3303f87ca834d2cc18ea913e8ec",
+      "live_write_body": "sha256:72836bce8c4026b1806f5e542dedbfe1aa7880aa65838273dea2a092a33bc0f5"
+    }
+  },
+  "evidence_references": [
+    {
+      "artifact": "public/manifest.signed.json",
+      "hash": "sha256:2e637823f7675abb339019de341f29d176a34bbb04656daec5ed13ea76e94724",
+      "scope": "canonical JSON"
+    },
+    {
+      "artifact": "public/claim.signed.json",
+      "hash": "sha256:681ab2dfbd1f3b563b0c129262246d5ba93959862923df7596108bf6529c0af0",
+      "scope": "canonical JSON"
+    },
+    {
+      "artifact": "public/evidence/worker-evidence.json",
+      "hash": "sha256:aa08866b2c2a1bcd7900ede75704253080b190e3a504fddeb19ec0242140e9ad",
+      "scope": "canonical JSON"
+    },
+    {
+      "artifact": "public/evidence/technocore-request.json",
+      "hash": "sha256:c0a56fe3f82ab2d8a82fcb34d6ea6b4800690e26f69f922c262260bdbbccad99",
+      "scope": "canonical JSON"
+    },
+    {
+      "artifact": "https://github.com/flop-labs/technocore-chat/tree/8bd794b953d7b3fbcff71f4db2e3257f68d144c3",
+      "commit": "8bd794b953d7b3fbcff71f4db2e3257f68d144c3",
+      "scope": "official source snapshot"
+    }
+  ],
+  "factual_matrix": [
+    {
+      "fact": "The task-manifest envelope has a valid resolution-receipt/0.1 Ed25519 signature and the recomputed canonical hash matches the worker claim reference.",
+      "result": true
+    },
+    {
+      "fact": "The worker-claim envelope has a valid resolution-receipt/0.1 Ed25519 signature; its signer equals payload.worker_did and the request DID.",
+      "result": true
+    },
+    {
+      "fact": "The worker DID differs from both the issuer DID and the fresh verifier DID.",
+      "result": true
+    },
+    {
+      "fact": "Local verification accepts the request signature over room|nonce|text for room resolution-2332dba3f6ba.",
+      "result": true
+    },
+    {
+      "fact": "The preserved write response is 453 bytes, hashes to the claimed value, reports HTTP 200, and the evidence records one attempt and one accepted write.",
+      "result": true
+    },
+    {
+      "fact": "The preserved JSON read response is 382 bytes, hashes to the claimed value, reports HTTP 200, and parses exactly to the separately recorded data object.",
+      "result": true
+    },
+    {
+      "fact": "The sole returned record matches the request DID, decimal nonce, and text exactly.",
+      "result": true
+    },
+    {
+      "fact": "The sole returned record has fields seq, ts, from, text, and nonce; it has no sig or signature field.",
+      "result": true
+    },
+    {
+      "fact": "The write, read observation, worker claim, and this verification all occurred before the manifest hard stop.",
+      "result": true
+    }
+  ],
+  "manifest_hash": "sha256:2e637823f7675abb339019de341f29d176a34bbb04656daec5ed13ea76e94724",
+  "outcome": "FAIL",
+  "outcome_reason": "The evidence is conclusive. T3 and T4 fail, so the manifest requires FAIL even though T1 and T2 pass.",
+  "signature_checks": {
+    "claim": {
+      "kind": "worker-claim",
+      "signer": "did:key:z6MkqDf2nHPqBCk9HMXoWUn1WMeWoaaYs9ZVyQ1qrW1c8aRo",
+      "valid": true
+    },
+    "manifest": {
+      "kind": "task-manifest",
+      "signer": "did:key:z6MkpbhvfusdhihTS4YGkJFqPPaWYgZ3bnfRwYJbAgzy8AqA",
+      "valid": true
+    },
+    "technocore_request": {
+      "canonical_message": "resolution-2332dba3f6ba|1787611310078|tc-response-reverify-2332dba3f6ba sha256:2e637823f7675abb339019de341f29d176a34bbb04656daec5ed13ea76e94724",
+      "did": "did:key:z6MkqDf2nHPqBCk9HMXoWUn1WMeWoaaYs9ZVyQ1qrW1c8aRo",
+      "valid": true
+    }
+  },
+  "source_checks": [
+    {
+      "finding": "The GitHub commit API resolves the requested object to the exact pinned commit; its tree is 7385b08b431ecb211d213f8ca8e4d137b40c97ec.",
+      "location": "https://github.com/flop-labs/technocore-chat/commit/8bd794b953d7b3fbcff71f4db2e3257f68d144c3",
+      "result": true
+    },
+    {
+      "finding": "The signed handler sweeps text, verifies room|nonce|swept-text, and calls store.append with the signer DID and integer nonce but not the signature.",
+      "location": "https://github.com/flop-labs/technocore-chat/blob/8bd794b953d7b3fbcff71f4db2e3257f68d144c3/src/app.py#L915-L940",
+      "result": true
+    },
+    {
+      "finding": "The signed record constructor stores only seq, ts, from, text, and nonce.",
+      "location": "https://github.com/flop-labs/technocore-chat/blob/8bd794b953d7b3fbcff71f4db2e3257f68d144c3/src/store.py#L1142-L1166",
+      "result": true
+    },
+    {
+      "finding": "The JSON response serializes the store view without adding signature material.",
+      "location": "https://github.com/flop-labs/technocore-chat/blob/8bd794b953d7b3fbcff71f4db2e3257f68d144c3/src/app.py#L370-L377",
+      "result": true
+    },
+    {
+      "finding": "The verifier implementation states and implements write-time verification; the record keeps the DID, not the signature.",
+      "location": "https://github.com/flop-labs/technocore-chat/blob/8bd794b953d7b3fbcff71f4db2e3257f68d144c3/src/didkey.py#L108-L127",
+      "result": true
+    }
+  ],
+  "source_commit": "8bd794b953d7b3fbcff71f4db2e3257f68d144c3",
+  "task_id": "tc-response-reverify-2332dba3f6ba",
+  "test_results": [
+    {
+      "evaluation": "The fresh worker DID is distinct from issuer and verifier; the exact request signature over room|nonce|text verifies locally.",
+      "id": "T1",
+      "pass_condition": "A fresh isolated Ed25519 did:key signs the exact Technocore canonical message and an independent local check validates that signature.",
+      "result": "PASS"
+    },
+    {
+      "evaluation": "The preserved evidence records one accepted HTTP 200 write and an HTTP 200 JSON read whose sole record matches the full DID, nonce, and swept text.",
+      "id": "T2",
+      "pass_condition": "The live Technocore service accepts the signed write and its JSON room response returns the same full DID, nonce, and swept text.",
+      "result": "PASS"
+    },
+    {
+      "evaluation": "The returned stored record contains no sig or signature field.",
+      "id": "T3",
+      "pass_condition": "The live JSON room response retains the original signature for the stored record.",
+      "result": "FAIL"
+    },
+    {
+      "evaluation": "Using only the server response, the canonical message can be reconstructed but the required signature bytes are absent, so cryptographic re-verification cannot be executed. No signature was borrowed from the worker request.",
+      "id": "T4",
+      "pass_condition": "A reader with only the public JSON room response and the published protocol can cryptographically re-verify the stored record without trusting the ingest event or using worker-held evidence.",
+      "result": "FAIL"
+    }
+  ],
+  "verified_at": "2026-08-24T22:48:56Z",
+  "verifier_did": "did:key:z6MkpS3CkytDVd1wWzShn7hWVe9JczgTvmANqF33QNatebYz"
+}

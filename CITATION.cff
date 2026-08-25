@@ -1,0 +1,10 @@
+cff-version: 1.2.0
+message: "If you use this artifact, cite it as follows."
+title: "Resolution Receipt for Technocore"
+authors:
+  - family-names: Lerma
+    given-names: Joseph
+version: 0.1.0
+date-released: 2026-08-24
+license: MIT
+repository-code: "https://github.com/chugarchugarr/resolution-receipt-technocore"

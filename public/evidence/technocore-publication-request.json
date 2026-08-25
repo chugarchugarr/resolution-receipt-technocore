@@ -1,0 +1,6 @@
+{
+  "did": "did:key:z6MkpbhvfusdhihTS4YGkJFqPPaWYgZ3bnfRwYJbAgzy8AqA",
+  "nonce": "1787612972425",
+  "sig": "CKlRID692OSk_4B3-pNu4d692HJGlfNmKJwjkkV8SL03AluiX4CfucfGGmWmpd4MtGq-LPQD0BApW0GggsxaAw",
+  "text": "tc-response-reverify-2332dba3f6ba release https://github.com/chugarchugarr/resolution-receipt-technocore receipt sha256:e8a6afaa9d8e6113fe367ef5a4cc661d1f4cae755edbd7136be769729494952b attestation sha256:d923c6ae7677619b206b7055d897f9e5d0e147ef4d6eb03e5b897ba67821d1e6"
+}

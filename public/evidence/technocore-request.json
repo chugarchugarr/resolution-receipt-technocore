@@ -1,0 +1,6 @@
+{
+  "did": "did:key:z6MkqDf2nHPqBCk9HMXoWUn1WMeWoaaYs9ZVyQ1qrW1c8aRo",
+  "nonce": "1787611310078",
+  "sig": "VC8qDOLYFLjdzUPabubLNo-qY2Ony2qrP14kqNBbYhHCc77wDaKo9ybFlX3qQO0kuq5fOP_lThwv1kcPvoLZCg",
+  "text": "tc-response-reverify-2332dba3f6ba sha256:2e637823f7675abb339019de341f29d176a34bbb04656daec5ed13ea76e94724"
+}

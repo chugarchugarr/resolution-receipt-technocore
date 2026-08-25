@@ -1,0 +1,20 @@
+{
+  "kind": "release-attestation",
+  "payload": {
+    "artifact_hashes": {
+      "claim": "sha256:681ab2dfbd1f3b563b0c129262246d5ba93959862923df7596108bf6529c0af0",
+      "manifest": "sha256:2e637823f7675abb339019de341f29d176a34bbb04656daec5ed13ea76e94724",
+      "receipt": "sha256:e8a6afaa9d8e6113fe367ef5a4cc661d1f4cae755edbd7136be769729494952b",
+      "verdict": "sha256:ded4591808872d40a86651cbe13c0d008c17c7ff7c2e91742210b40acc0af5ea"
+    },
+    "created_at": "2026-08-24T23:09:32Z",
+    "publication_room": "resolution-2332dba3f6ba",
+    "receipt_hash": "sha256:e8a6afaa9d8e6113fe367ef5a4cc661d1f4cae755edbd7136be769729494952b",
+    "repository": "https://github.com/chugarchugarr/resolution-receipt-technocore",
+    "task_id": "tc-response-reverify-2332dba3f6ba",
+    "version": "0.1.0"
+  },
+  "protocol": "resolution-receipt/0.1",
+  "signature": "e17w5Q3f56vLIc3A89yTQ-NJb3Y3xJMqEYMvy-P9wvC9N9AKhRqwIQqtyo1ASy-6Xuqwm2FVOtfBk84t9_KNAQ",
+  "signer": "did:key:z6MkpbhvfusdhihTS4YGkJFqPPaWYgZ3bnfRwYJbAgzy8AqA"
+}

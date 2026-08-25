@@ -1,0 +1,44 @@
+{
+  "kind": "resolution-receipt",
+  "payload": {
+    "certified_exit": "FAIL",
+    "disagreements": [],
+    "evidence_hashes": {
+      "claim": "sha256:681ab2dfbd1f3b563b0c129262246d5ba93959862923df7596108bf6529c0af0",
+      "manifest": "sha256:2e637823f7675abb339019de341f29d176a34bbb04656daec5ed13ea76e94724",
+      "verdict": "sha256:ded4591808872d40a86651cbe13c0d008c17c7ff7c2e91742210b40acc0af5ea"
+    },
+    "issued_at": "2026-08-24T22:50:33Z",
+    "original_promise": "Determine whether a signed Technocore room record can be independently re-verified using only the current public server response.",
+    "task_id": "tc-response-reverify-2332dba3f6ba",
+    "test_results": [
+      {
+        "evaluation": "The fresh worker DID is distinct from issuer and verifier; the exact request signature over room|nonce|text verifies locally.",
+        "id": "T1",
+        "pass_condition": "A fresh isolated Ed25519 did:key signs the exact Technocore canonical message and an independent local check validates that signature.",
+        "result": "PASS"
+      },
+      {
+        "evaluation": "The preserved evidence records one accepted HTTP 200 write and an HTTP 200 JSON read whose sole record matches the full DID, nonce, and swept text.",
+        "id": "T2",
+        "pass_condition": "The live Technocore service accepts the signed write and its JSON room response returns the same full DID, nonce, and swept text.",
+        "result": "PASS"
+      },
+      {
+        "evaluation": "The returned stored record contains no sig or signature field.",
+        "id": "T3",
+        "pass_condition": "The live JSON room response retains the original signature for the stored record.",
+        "result": "FAIL"
+      },
+      {
+        "evaluation": "Using only the server response, the canonical message can be reconstructed but the required signature bytes are absent, so cryptographic re-verification cannot be executed. No signature was borrowed from the worker request.",
+        "id": "T4",
+        "pass_condition": "A reader with only the public JSON room response and the published protocol can cryptographically re-verify the stored record without trusting the ingest event or using worker-held evidence.",
+        "result": "FAIL"
+      }
+    ]
+  },
+  "protocol": "resolution-receipt/0.1",
+  "signature": "7LSJzxxPuW7sAfKv1awGcw7PLTIspjWgH87G5QIPM0puW-w_RALA0pRqGvOoWqQrsnIJc2QPp-Qv5x1za_WrAA",
+  "signer": "did:key:z6MkpbhvfusdhihTS4YGkJFqPPaWYgZ3bnfRwYJbAgzy8AqA"
+}

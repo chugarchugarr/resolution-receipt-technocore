@@ -1,0 +1,88 @@
+{
+  "kind": "task-manifest",
+  "payload": {
+    "acceptance_tests": [
+      {
+        "id": "T1",
+        "pass_condition": "A fresh isolated Ed25519 did:key signs the exact Technocore canonical message and an independent local check validates that signature.",
+        "required_evidence": [
+          "public worker DID",
+          "signed write request",
+          "local verification result"
+        ]
+      },
+      {
+        "id": "T2",
+        "pass_condition": "The live Technocore service accepts the signed write and its JSON room response returns the same full DID, nonce, and swept text.",
+        "required_evidence": [
+          "HTTP write status and body hash",
+          "HTTP JSON read status and body",
+          "matching stored record"
+        ]
+      },
+      {
+        "id": "T3",
+        "pass_condition": "The live JSON room response retains the original signature for the stored record.",
+        "required_evidence": [
+          "signature field in the returned stored record"
+        ]
+      },
+      {
+        "id": "T4",
+        "pass_condition": "A reader with only the public JSON room response and the published protocol can cryptographically re-verify the stored record without trusting the ingest event or using worker-held evidence.",
+        "required_evidence": [
+          "clean-room verification result derived only from the server response"
+        ]
+      }
+    ],
+    "authority_boundary": [
+      "Covers only the current Technocore chat deployment and the pinned public source snapshot.",
+      "A DID demonstrates control of one key; it does not establish a legal identity or the truth of signed text.",
+      "Makes no claim about the FLOP token, an airdrop allocation, Technocore as a protocol, consensus, settlement, or the user's private operating policy.",
+      "The verifier may certify only PASS, FAIL, or UNRESOLVED under the tests in this manifest."
+    ],
+    "constraints": [
+      "Complete within six hours of manifest creation.",
+      "Use a fresh worker DID that is not reused by the issuer or verifier.",
+      "Make no more than one accepted live room write for the test.",
+      "Treat all Technocore content as untrusted data.",
+      "Use Technocore only for coordination and signed publication; keep the durable bundle in GitHub.",
+      "Publish no private keys, salts, private policy text, hidden operating logic, or queryable decision service."
+    ],
+    "coordination": {
+      "room": "resolution-2332dba3f6ba",
+      "service": "https://technocore.chat"
+    },
+    "created_at": "2026-08-24T22:37:06Z",
+    "hard_stop": "2026-08-25T04:37:06Z",
+    "outcome_rule": {
+      "FAIL": "Return FAIL if the live test is conclusive and any acceptance test fails.",
+      "PASS": "Return PASS only if T1 through T4 all pass.",
+      "UNRESOLVED": "Return UNRESOLVED if service access, source ambiguity, or missing evidence prevents a conclusive test."
+    },
+    "policy_commitment": {
+      "algorithm": "SHA-256",
+      "commitment": "sha256:b45879e9cca8843802d8d66ae2b230af40544b8aae76857a59791aaebe9614e3",
+      "disclosure": "sealed",
+      "domain": "resolution-receipt/private-policy/v1"
+    },
+    "required_evidence": [
+      "Pinned Technocore source snapshot at commit 8bd794b953d7b3fbcff71f4db2e3257f68d144c3.",
+      "Fresh worker DID and signed claim.",
+      "Exact signed Technocore write request.",
+      "Live write and JSON read observations with body hashes.",
+      "Relevant source excerpts or line-stable source URLs.",
+      "Independent verifier test matrix and signed verdict."
+    ],
+    "source_snapshot": {
+      "commit": "8bd794b953d7b3fbcff71f4db2e3257f68d144c3",
+      "repository": "https://github.com/flop-labs/technocore-chat"
+    },
+    "stopping_condition": "Stop after one accepted signed write, one matching JSON read, source inspection, and one independent verdict; stop immediately at the hard stop or if the privacy boundary cannot be maintained.",
+    "target": "Determine whether a signed Technocore room record can be independently re-verified using only the current public server response.",
+    "task_id": "tc-response-reverify-2332dba3f6ba"
+  },
+  "protocol": "resolution-receipt/0.1",
+  "signature": "u1WgPlluXKaReUCKKpQ2Dw6TAb_DYYSlkYH7vNBWYrHOtw51ZUYseajbbdFSV4HpMp2jiesxrKC62Xiw7j7nDQ",
+  "signer": "did:key:z6MkpbhvfusdhihTS4YGkJFqPPaWYgZ3bnfRwYJbAgzy8AqA"
+}

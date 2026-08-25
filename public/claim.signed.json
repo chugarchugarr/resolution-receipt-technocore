@@ -1,0 +1,49 @@
+{
+  "kind": "worker-claim",
+  "payload": {
+    "created_at": "2026-08-24T22:44:14Z",
+    "evidence_hashes": {
+      "live_read_body": "sha256:ec02a475f379ebffd626e7685888c52014b8c3303f87ca834d2cc18ea913e8ec",
+      "live_write_body": "sha256:72836bce8c4026b1806f5e542dedbfe1aa7880aa65838273dea2a092a33bc0f5",
+      "technocore_request": "sha256:c0a56fe3f82ab2d8a82fcb34d6ea6b4800690e26f69f922c262260bdbbccad99",
+      "worker_evidence": "sha256:aa08866b2c2a1bcd7900ede75704253080b190e3a504fddeb19ec0242140e9ad"
+    },
+    "manifest_hash": "sha256:2e637823f7675abb339019de341f29d176a34bbb04656daec5ed13ea76e94724",
+    "performed_steps": [
+      {
+        "detail": "Verified the task-manifest envelope with the project CLI and confirmed its canonical hash.",
+        "step": "verify_signed_manifest"
+      },
+      {
+        "detail": "Generated a fresh isolated Ed25519 did:key labeled worker.",
+        "step": "generate_worker_identity"
+      },
+      {
+        "detail": "Created one signed request for the specified room, decimal nonce, task ID, and manifest hash, then validated its signature locally.",
+        "step": "create_and_verify_request"
+      },
+      {
+        "detail": "Made one live signed write attempt; the service returned HTTP 200 and the response body hash recorded in evidence.",
+        "step": "live_signed_write"
+      },
+      {
+        "detail": "Read the same room once with format=json; the service returned HTTP 200 and a record matching the DID, nonce, and swept text.",
+        "step": "live_json_read"
+      },
+      {
+        "detail": "Observed that the returned record fields were seq, ts, from, text, and nonce, with no signature field.",
+        "step": "inspect_public_response"
+      },
+      {
+        "detail": "Inspected line-stable official source locations at the manifest-pinned commit and recorded those references in worker evidence.",
+        "step": "inspect_pinned_source"
+      }
+    ],
+    "source_commit": "8bd794b953d7b3fbcff71f4db2e3257f68d144c3",
+    "task_id": "tc-response-reverify-2332dba3f6ba",
+    "worker_did": "did:key:z6MkqDf2nHPqBCk9HMXoWUn1WMeWoaaYs9ZVyQ1qrW1c8aRo"
+  },
+  "protocol": "resolution-receipt/0.1",
+  "signature": "OKTx9P4IP7RfPQ3jHMmgglEnGJbgL3y256M2hXVUX945YxowBOKog6G10KTTRIA6GD6da2tGMcUi-KtDFHrOCw",
+  "signer": "did:key:z6MkqDf2nHPqBCk9HMXoWUn1WMeWoaaYs9ZVyQ1qrW1c8aRo"
+}
