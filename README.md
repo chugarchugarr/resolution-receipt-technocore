@@ -16,6 +16,20 @@ This repository contains two linked, signed runs:
 Created and issued by Joseph Lerma. Technocore is used for coordination and
 signed publication. GitHub holds the durable artifacts.
 
+## Upstream relationship and attribution
+
+This repository is Joseph Lerma / `chugarchugarr`'s independent reproduction,
+client-layer mitigation, and signed evidence record for the problem described in
+[Technocore issue #66](https://github.com/flop-labs/technocore-chat/issues/66).
+
+The related native server implementation is
+[flop-labs/technocore-chat PR #93](https://github.com/flop-labs/technocore-chat/pull/93).
+PR #93 is authored and maintained by `undefinedquillharbor3417`, not by
+`chugarchugarr`. It is not represented here as Joseph's code, PR, or an upstream
+acceptance of this repository. The relationship is complementary: this repository
+preserves the independent FAIL→PASS evidence; PR #93 pursues the native server-side
+fix.
+
 ## Latest run
 
 Task: determine whether a self-contained signed Technocore record can be
