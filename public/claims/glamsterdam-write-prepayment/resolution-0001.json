@@ -1,0 +1,66 @@
+{
+  "kind": "resolution-state",
+  "payload": {
+    "checks": [
+      {
+        "evidence": [
+          "pr-head"
+        ],
+        "id": "osaka-baseline",
+        "outcome": "PASS",
+        "required": true,
+        "requirement": "the fixed child budget succeeds under the Osaka baseline"
+      },
+      {
+        "evidence": [
+          "pr-head"
+        ],
+        "id": "amsterdam-regression",
+        "outcome": "PASS",
+        "required": true,
+        "requirement": "the identical fixed child budget fails after Amsterdam SSTORE repricing"
+      },
+      {
+        "evidence": [
+          "pr-head"
+        ],
+        "id": "voucher-restores-child",
+        "outcome": "PASS",
+        "required": true,
+        "requirement": "moving the exact write delta to transaction scope restores the child execution path"
+      },
+      {
+        "evidence": [
+          "pr-head"
+        ],
+        "id": "charge-preserved",
+        "outcome": "PASS",
+        "required": true,
+        "requirement": "the prepaid path preserves the full 12,100 Amsterdam storage-resource charge"
+      },
+      {
+        "evidence": [],
+        "id": "external-falsification",
+        "outcome": "UNRESOLVED",
+        "required": true,
+        "requirement": "an independent technically credible reviewer has accepted or falsified the experiment's two narrow claims"
+      }
+    ],
+    "effective_target": "prove that Amsterdam SSTORE repricing breaks a fixed child gas budget and that transaction-scope prepayment can restore the child while preserving the full storage-resource charge",
+    "evidence": {
+      "pr-head": {
+        "digest": "sha256:6220f9970da9062056516d0f0d44e195244dcdef5c0b7e90f5f35fbb75708f74",
+        "kind": "github-pr-snapshot",
+        "uri": "https://github.com/chugarchugarr/execution-specs/pull/2"
+      }
+    },
+    "original_target": "prove that Amsterdam SSTORE repricing breaks a fixed child gas budget and that transaction-scope prepayment can restore the child while preserving the full storage-resource charge",
+    "previous": null,
+    "revision_reason": null,
+    "state": "UNRESOLVED",
+    "subject": "github:chugarchugarr/execution-specs#2"
+  },
+  "protocol": "resolution-receipt/0.1",
+  "signature": "TGdGSEwyIM4KNEDMl4k_crnWO5PtHv1xtpaIYoxGBd1aoWM6fYQ-lmM8umCiOxKByBhyh5p1JFTZDX852AYPBw",
+  "signer": "did:key:z6Mkm7jRjLB5o5KjaKUXWzySVpcfd9tddCKgCvu2rGXRr7fg"
+}
