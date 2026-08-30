@@ -1,0 +1,146 @@
+{
+  "$id": "https://github.com/chugarchugarr/resolution-receipt-technocore/schema/resolution-state.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "checks": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "evidence": {
+            "items": {
+              "maxLength": 120,
+              "minLength": 1,
+              "type": "string"
+            },
+            "type": "array",
+            "uniqueItems": true
+          },
+          "id": {
+            "maxLength": 120,
+            "minLength": 1,
+            "type": "string"
+          },
+          "outcome": {
+            "enum": [
+              "PASS",
+              "FAIL",
+              "UNRESOLVED"
+            ]
+          },
+          "required": {
+            "type": "boolean"
+          },
+          "requirement": {
+            "maxLength": 4096,
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "requirement",
+          "required",
+          "outcome",
+          "evidence"
+        ],
+        "type": "object"
+      },
+      "minItems": 1,
+      "type": "array"
+    },
+    "effective_target": {
+      "maxLength": 4096,
+      "minLength": 1,
+      "type": "string"
+    },
+    "evidence": {
+      "additionalProperties": {
+        "additionalProperties": false,
+        "properties": {
+          "digest": {
+            "pattern": "^sha256:[0-9a-f]{64}$",
+            "type": "string"
+          },
+          "kind": {
+            "maxLength": 80,
+            "minLength": 1,
+            "type": "string"
+          },
+          "uri": {
+            "anyOf": [
+              {
+                "maxLength": 2048,
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "kind",
+          "digest",
+          "uri"
+        ],
+        "type": "object"
+      },
+      "type": "object"
+    },
+    "original_target": {
+      "maxLength": 4096,
+      "minLength": 1,
+      "type": "string"
+    },
+    "previous": {
+      "anyOf": [
+        {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "revision_reason": {
+      "anyOf": [
+        {
+          "maxLength": 2048,
+          "minLength": 1,
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "state": {
+      "enum": [
+        "SURVIVED",
+        "NARROWED",
+        "FAILED",
+        "UNRESOLVED"
+      ]
+    },
+    "subject": {
+      "maxLength": 2048,
+      "minLength": 1,
+      "type": "string"
+    }
+  },
+  "required": [
+    "subject",
+    "original_target",
+    "effective_target",
+    "evidence",
+    "checks",
+    "state",
+    "previous",
+    "revision_reason"
+  ],
+  "title": "RLP-1 resolution-state payload",
+  "type": "object"
+}
