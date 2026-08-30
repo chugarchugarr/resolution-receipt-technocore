@@ -1,0 +1,15 @@
+{
+  "base": "20f7f6271a720091e5fea0a82e7bc802866ae36a",
+  "claims": [
+    "OSAKA_PASS",
+    "AMSTERDAM_FAIL",
+    "AMSTERDAM_VOUCHER_PASS",
+    "AMSTERDAM_TOTAL_CHARGE_PRESERVED"
+  ],
+  "head": "e16d4096a95ad1409fe4b26af0dbeb8de7dd1fe9",
+  "kind": "github-pr-snapshot",
+  "pull_request": 2,
+  "repository": "chugarchugarr/execution-specs",
+  "scope": "Executable experiment only; no wire-format, mainnet-adoption, or acceptance claim.",
+  "url": "https://github.com/chugarchugarr/execution-specs/pull/2"
+}
