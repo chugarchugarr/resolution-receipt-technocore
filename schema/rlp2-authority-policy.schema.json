@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/chugarchugarr/resolution-receipt-technocore/schema/rlp2-authority-policy.schema.json",
+  "title": "RLP-2 resolver authority policy",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["policy_version", "policy_id", "mode", "principals", "threshold", "external_evidence", "failure_mode"],
+  "properties": {
+    "policy_version": {"const": "rlp.authority.v2"},
+    "policy_id": {"type": "string", "minLength": 1, "maxLength": 160},
+    "mode": {"enum": ["EXACT", "ANY_OF", "ALL_OF", "THRESHOLD", "EXTERNAL"]},
+    "principals": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1}
+    },
+    "threshold": {
+      "anyOf": [
+        {"type": "integer", "minimum": 1},
+        {"type": "null"}
+      ]
+    },
+    "external_evidence": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1}
+    },
+    "failure_mode": {"const": "ABSTAIN"}
+  }
+}

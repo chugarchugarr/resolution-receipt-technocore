@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/chugarchugarr/resolution-receipt-technocore/schema/rlp2-action-policy.schema.json",
+  "title": "RLP-2 action policy",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["policy_version", "policy_id", "rules", "default"],
+  "properties": {
+    "policy_version": {"const": "rlp.action.v2"},
+    "policy_id": {"type": "string", "minLength": 1, "maxLength": 160},
+    "default": {"const": "HOLD"},
+    "rules": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["action", "allowed_resolution_states", "require_authority", "require_scope_containment"],
+        "properties": {
+          "action": {"type": "string", "minLength": 1, "maxLength": 160},
+          "allowed_resolution_states": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": {"enum": ["SURVIVED", "NARROWED", "FAILED", "UNRESOLVED"]}
+          },
+          "require_authority": {"const": "AUTHORIZED"},
+          "require_scope_containment": {"type": "boolean"}
+        }
+      }
+    }
+  }
+}

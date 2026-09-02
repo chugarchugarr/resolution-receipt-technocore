@@ -1,0 +1,130 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/chugarchugarr/resolution-receipt-technocore/schema/rlp2-policy-bound.schema.json",
+  "title": "RLP-2 policy-bound resolution payload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["body", "authority_state", "approvals", "transition_approvals"],
+  "properties": {
+    "authority_state": {"enum": ["AUTHORIZED", "UNAUTHORIZED", "UNRESOLVED"]},
+    "approvals": {"type": "array", "items": {"type": "object"}},
+    "transition_approvals": {"type": "array", "items": {"type": "object"}},
+    "body": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "profile", "subject", "original_target", "effective_target",
+        "original_scope", "effective_scope", "evidence", "verification_specs",
+        "verification_results", "authority_policy", "authority_policy_digest",
+        "checks", "state", "previous", "previous_profile", "revision_reason"
+      ],
+      "properties": {
+        "profile": {"const": "rlp-2"},
+        "subject": {"type": "string", "minLength": 1, "maxLength": 2048},
+        "original_target": {"type": "string", "minLength": 1, "maxLength": 4096},
+        "effective_target": {"type": "string", "minLength": 1, "maxLength": 4096},
+        "original_scope": {"$ref": "#/$defs/scope"},
+        "effective_scope": {"$ref": "#/$defs/scope"},
+        "evidence": {
+          "type": "object",
+          "additionalProperties": {"$ref": "#/$defs/evidence"}
+        },
+        "verification_specs": {
+          "type": "object",
+          "additionalProperties": {"$ref": "#/$defs/verificationSpec"}
+        },
+        "verification_results": {
+          "type": "object",
+          "additionalProperties": {"$ref": "#/$defs/verificationResult"}
+        },
+        "authority_policy": {"$ref": "rlp2-authority-policy.schema.json"},
+        "authority_policy_digest": {"$ref": "#/$defs/sha256"},
+        "checks": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"$ref": "#/$defs/check"}
+        },
+        "state": {"enum": ["SURVIVED", "NARROWED", "FAILED", "UNRESOLVED"]},
+        "previous": {
+          "anyOf": [{"$ref": "#/$defs/sha256"}, {"type": "null"}]
+        },
+        "previous_profile": {
+          "enum": ["RLP-1", "RLP-2", null]
+        },
+        "revision_reason": {
+          "anyOf": [
+            {"type": "string", "minLength": 1, "maxLength": 2048},
+            {"type": "null"}
+          ]
+        }
+      }
+    }
+  },
+  "$defs": {
+    "sha256": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["adapter", "value"],
+      "properties": {
+        "adapter": {"type": "string", "minLength": 1, "maxLength": 160},
+        "value": {}
+      }
+    },
+    "evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "digest", "uri"],
+      "properties": {
+        "kind": {"type": "string", "minLength": 1, "maxLength": 80},
+        "digest": {"$ref": "#/$defs/sha256"},
+        "uri": {
+          "anyOf": [
+            {"type": "string", "minLength": 1, "maxLength": 2048},
+            {"type": "null"}
+          ]
+        }
+      }
+    },
+    "verificationSpec": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["method", "method_digest", "claims"],
+      "properties": {
+        "method": {"type": "string", "minLength": 1, "maxLength": 160},
+        "method_digest": {"$ref": "#/$defs/sha256"},
+        "claims": {"type": "object"}
+      }
+    },
+    "verificationResult": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["method", "method_digest", "claims_digest", "result"],
+      "properties": {
+        "method": {"type": "string", "minLength": 1, "maxLength": 160},
+        "method_digest": {"$ref": "#/$defs/sha256"},
+        "claims_digest": {"$ref": "#/$defs/sha256"},
+        "result": {"enum": ["VERIFIED", "INVALID", "UNRESOLVED"]}
+      }
+    },
+    "check": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "requirement", "required", "outcome", "evidence"],
+      "properties": {
+        "id": {"type": "string", "minLength": 1, "maxLength": 120},
+        "requirement": {"type": "string", "minLength": 1, "maxLength": 4096},
+        "required": {"type": "boolean"},
+        "outcome": {"enum": ["PASS", "FAIL", "UNRESOLVED"]},
+        "evidence": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"type": "string", "minLength": 1}
+        }
+      }
+    }
+  }
+}
