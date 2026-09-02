@@ -18,7 +18,7 @@ from __future__ import annotations
 
 from typing import Any, Mapping
 
-from .core import ReceiptError, hash_object, sign_envelope, verify_envelope
+from .core import ReceiptError, SHA256_RE, hash_object, sign_envelope, verify_envelope
 from .policy import action_policy_digest
 from .rlp2 import verify_and_decide_action
 from .scope import ScopeAdapter, validate_scope
@@ -66,6 +66,19 @@ def _text(value: Any, name: str, *, limit: int = 512) -> str:
     if not isinstance(value, str) or not value or len(value) > limit:
         raise ReceiptError(f"{name} must contain 1 to {limit} characters")
     return value
+
+
+def _validate_evidence_descriptor(value: Any) -> dict[str, Any]:
+    if not isinstance(value, dict) or set(value) != {"kind", "digest", "uri"}:
+        raise ReceiptError("manifestation evidence must contain kind, digest, and uri")
+    kind = _text(value["kind"], "manifestation evidence kind", limit=80)
+    digest = value["digest"]
+    if not isinstance(digest, str) or not SHA256_RE.fullmatch(digest):
+        raise ReceiptError("manifestation evidence digest must be a sha256: hash")
+    uri = value["uri"]
+    if uri is not None:
+        uri = _text(uri, "manifestation evidence uri", limit=2048)
+    return {"kind": kind, "digest": digest, "uri": uri}
 
 
 def build_action_request(
@@ -194,6 +207,7 @@ def sign_manifestation_receipt(
     decision_payload = verify_envelope(action_decision, expected_kind=ACTION_DECISION_KIND)
     if not isinstance(decision_payload, dict) or set(decision_payload) != _ACTION_DECISION_FIELDS:
         raise ReceiptError("continuity action decision has missing or unknown fields")
+    evidence = _validate_evidence_descriptor(evidence)
     decision_digest = hash_object(action_decision)
     spec = validate_verification_spec(verification_spec)
     claims = spec["claims"]
@@ -249,6 +263,9 @@ def verify_manifestation_receipt(
     if payload["destination"] != decision_payload["request"]["destination"]:
         raise ReceiptError("manifestation is bound to a different destination")
 
+    descriptor = _validate_evidence_descriptor(payload["evidence"])
+    if descriptor != payload["evidence"]:
+        raise ReceiptError("manifestation evidence descriptor is not canonical")
     spec = validate_verification_spec(payload["verification_spec"])
     claims = spec["claims"]
     required_claims = {
@@ -261,7 +278,7 @@ def verify_manifestation_receipt(
             raise ReceiptError(f"manifestation verification claim {name} is not bound to the decision")
     stored = {"manifestation": payload["verification_result"]}
     specs = {"manifestation": spec}
-    evidence = {"manifestation": payload["evidence"]}
+    evidence = {"manifestation": descriptor}
     validate_verification_results(evidence, stored, specs=specs)
     if verification_adapters is not None:
         recompute_verification_results(evidence, specs, stored, verification_adapters)
