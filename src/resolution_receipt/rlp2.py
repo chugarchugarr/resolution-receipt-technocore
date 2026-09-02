@@ -18,9 +18,17 @@ from .authority import (
     verify_authority_approvals,
     verify_transition_approvals,
 )
-from .core import ReceiptError, did_from_private_key, hash_object, sign_envelope, verify_envelope
+from .core import (
+    ReceiptError,
+    SHA256_RE,
+    did_from_private_key,
+    hash_object,
+    sign_envelope,
+    verify_envelope,
+)
+from .policy import action_policy_digest, derive_action_decision
 from .resolution import RESOLUTION_KIND, build_resolution_payload, verify_resolution
-from .scope import validate_scope
+from .scope import ScopeAdapter, validate_scope, validate_scope_transition
 from .verification import (
     VerificationAdapter,
     recompute_verification_results,
@@ -80,6 +88,27 @@ def _validate_specs(evidence: Mapping[str, Any], specs: Any) -> dict[str, dict[s
     return {key: validate_verification_spec(value) for key, value in specs.items()}
 
 
+def _bootstrap_adjusted_authority_state(
+    state: str,
+    *,
+    authority_policy: dict[str, Any],
+    previous: dict[str, Any] | None,
+) -> str:
+    """Prevent RLP-1 signers from self-bootstrapping RLP-2 authority.
+
+    RLP-1 intentionally had no authority semantics. Therefore the first RLP-2
+    successor cannot become operative merely because its new policy names its own
+    signer. A bootstrap may become authoritative only through EXTERNAL policy,
+    whose required authority evidence is natively verified by the normal adapter
+    path. Other bootstrap policies remain UNRESOLVED until an externally anchored
+    RLP-2 policy exists and can authorize a later transition.
+    """
+    if previous is not None and _previous_profile(previous) == "RLP-1":
+        if authority_policy["mode"] != "EXTERNAL":
+            return "UNRESOLVED"
+    return state
+
+
 def _build_body(
     *,
     subject: str,
@@ -105,8 +134,15 @@ def _build_body(
     )
     original_scope = validate_scope(original_scope)
     effective_scope = validate_scope(effective_scope)
+    validate_scope_transition(
+        original_scope,
+        effective_scope,
+        resolution_state=base["state"],
+    )
     specs = _validate_specs(base["evidence"], verification_specs)
-    results = validate_verification_results(base["evidence"], verification_results)
+    results = validate_verification_results(
+        base["evidence"], verification_results, specs=specs
+    )
     require_verified_check_evidence(base["checks"], results)
     authority_policy = validate_authority_policy(authority_policy)
 
@@ -197,6 +233,11 @@ def sign_rlp2_resolution(
         approval_signers=signers,
         verification_results=results,
     )
+    authority_state = _bootstrap_adjusted_authority_state(
+        authority_state,
+        authority_policy=body["authority_policy"],
+        previous=previous,
+    )
 
     transition_approvals: list[dict[str, Any]] = []
     if previous is not None and _previous_profile(previous) == "RLP-2":
@@ -240,6 +281,7 @@ def verify_rlp2_resolution(
     if body["profile"] != RLP2_PROFILE:
         raise ReceiptError("unsupported RLP-2 profile")
 
+    standalone_successor = previous is None and body["previous"] is not None
     rebuilt = _build_body(
         subject=body["subject"],
         original_target=body["original_target"],
@@ -252,14 +294,18 @@ def verify_rlp2_resolution(
         authority_policy=body["authority_policy"],
         checks=body["checks"],
         previous=previous,
-        revision_reason=body["revision_reason"],
+        revision_reason=None if standalone_successor else body["revision_reason"],
     )
-    # _build_body can only reconstruct previous metadata when the predecessor is
-    # supplied. For standalone structural verification, compare all non-lineage fields.
-    if previous is None and body["previous"] is not None:
+    if standalone_successor:
         for key in RLP2_BODY_FIELDS - {"previous", "previous_profile", "revision_reason"}:
             if rebuilt[key] != body[key]:
                 raise ReceiptError(f"RLP-2 derived field mismatch: {key}")
+        if not isinstance(body["previous"], str) or not SHA256_RE.fullmatch(body["previous"]):
+            raise ReceiptError("successor RLP-2 previous must be a sha256: hash")
+        if body["previous_profile"] not in {"RLP-1", "RLP-2"}:
+            raise ReceiptError("successor RLP-2 previous_profile is invalid")
+        if not isinstance(body["revision_reason"], str) or not body["revision_reason"] or len(body["revision_reason"]) > 2048:
+            raise ReceiptError("successor RLP-2 record requires a revision_reason")
     elif rebuilt != body:
         raise ReceiptError("RLP-2 body does not match deterministic derivation")
 
@@ -286,6 +332,15 @@ def verify_rlp2_resolution(
         approval_signers=signers,
         verification_results=body["verification_results"],
     )
+    authority_state = _bootstrap_adjusted_authority_state(
+        authority_state,
+        authority_policy=body["authority_policy"],
+        previous=previous,
+    )
+    # A standalone successor can establish structure and signature integrity, but
+    # cannot claim an RLP-1 bootstrap authority result without its predecessor.
+    if standalone_successor and body["previous_profile"] == "RLP-1":
+        authority_state = "UNRESOLVED"
     if payload["authority_state"] != authority_state:
         raise ReceiptError("RLP-2 authority_state does not match authority policy")
 
@@ -350,6 +405,8 @@ def verify_rlp2_lineage(
     current: dict[str, Any] | None = None
     seen_rlp2 = False
     for record in records:
+        if not isinstance(record, dict):
+            raise ReceiptError("RLP-2 lineage records must be objects")
         if record.get("kind") == RESOLUTION_KIND:
             if seen_rlp2 or previous is not None:
                 raise ReceiptError("RLP-1 may appear only once at the start of an RLP-2 lineage")
@@ -367,3 +424,110 @@ def verify_rlp2_lineage(
         raise ReceiptError("RLP-2 lineage contains no RLP-2 record")
     current["records"] = len(records)
     return current
+
+
+def verify_rlp2_heads(
+    lineages: Any,
+    *,
+    verification_adapters: Mapping[str, VerificationAdapter] | None = None,
+) -> dict[str, Any]:
+    """Verify competing candidate lineages without silently choosing a winner."""
+    if not isinstance(lineages, list) or not lineages:
+        raise ReceiptError("RLP-2 head set must contain at least one lineage")
+    verified = [
+        verify_rlp2_lineage(lineage, verification_adapters=verification_adapters)
+        for lineage in lineages
+    ]
+    identities = {(item["subject"], item["original_target"]) for item in verified}
+    if len(identities) != 1:
+        raise ReceiptError("RLP-2 head set mixes unrelated resolution identities")
+    heads = sorted({item["head"] for item in verified})
+    return {
+        "integrity": "PASS",
+        "fork_state": "SINGLE" if len(heads) == 1 else "FORK_UNRESOLVED",
+        "heads": heads,
+        "subject": verified[0]["subject"],
+        "original_target": verified[0]["original_target"],
+        "candidates": verified,
+    }
+
+
+def verify_and_decide_action(
+    records: Any,
+    *,
+    action_id: str,
+    requested_scope: Any,
+    policy: Any,
+    verification_adapters: Mapping[str, VerificationAdapter] | None = None,
+    scope_adapters: Mapping[str, ScopeAdapter] | None = None,
+) -> dict[str, Any]:
+    """Verify the complete supplied lineage before deriving an action decision.
+
+    Callers cannot inject precomputed authority, resolution, integrity, or head
+    values into this path. Every such value is derived from the signed lineage.
+    """
+    verified = verify_rlp2_lineage(
+        records, verification_adapters=verification_adapters
+    )
+    decision = derive_action_decision(
+        action_id=action_id,
+        requested_scope=requested_scope,
+        resolution_state=verified["state"],
+        authority_state=verified["authority_state"],
+        effective_scope=verified["effective_scope"],
+        lineage_integrity=verified["integrity"],
+        policy=policy,
+        resolution_head=verified["head"],
+        scope_adapters=scope_adapters,
+    )
+    return {
+        **decision,
+        "resolution_state": verified["state"],
+        "authority_state": verified["authority_state"],
+        "lineage_integrity": verified["integrity"],
+    }
+
+
+def verify_and_decide_action_heads(
+    lineages: Any,
+    *,
+    action_id: str,
+    requested_scope: Any,
+    policy: Any,
+    verification_adapters: Mapping[str, VerificationAdapter] | None = None,
+    scope_adapters: Mapping[str, ScopeAdapter] | None = None,
+) -> dict[str, Any]:
+    """Gate action across a set of possible heads; unresolved forks always HOLD."""
+    head_set = verify_rlp2_heads(
+        lineages, verification_adapters=verification_adapters
+    )
+    if head_set["fork_state"] != "SINGLE":
+        return {
+            "action_id": action_id,
+            "decision": "HOLD",
+            "reason": "multiple valid RLP-2 heads remain unresolved",
+            "resolution_head": None,
+            "action_policy_digest": action_policy_digest(policy),
+            "fork_state": head_set["fork_state"],
+            "heads": head_set["heads"],
+        }
+    candidate = head_set["candidates"][0]
+    decision = derive_action_decision(
+        action_id=action_id,
+        requested_scope=requested_scope,
+        resolution_state=candidate["state"],
+        authority_state=candidate["authority_state"],
+        effective_scope=candidate["effective_scope"],
+        lineage_integrity=candidate["integrity"],
+        policy=policy,
+        resolution_head=candidate["head"],
+        scope_adapters=scope_adapters,
+    )
+    return {
+        **decision,
+        "fork_state": "SINGLE",
+        "heads": head_set["heads"],
+        "resolution_state": candidate["state"],
+        "authority_state": candidate["authority_state"],
+        "lineage_integrity": candidate["integrity"],
+    }
