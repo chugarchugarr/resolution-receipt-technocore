@@ -1,0 +1,50 @@
+{
+  "$id": "https://github.com/chugarchugarr/resolution-receipt-technocore/schema/resolution-continuity-action-decision.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Resolution Continuity action-decision payload",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "profile": {"const": "resolution-continuity-1"},
+    "request": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "profile": {"const": "resolution-continuity-1"},
+        "action_id": {"type": "string", "minLength": 1, "maxLength": 160},
+        "destination": {"type": "string", "minLength": 1, "maxLength": 512},
+        "requested_scope": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "adapter": {"type": "string", "minLength": 1, "maxLength": 160},
+            "value": {}
+          },
+          "required": ["adapter", "value"]
+        },
+        "nonce": {"type": "string", "minLength": 1, "maxLength": 256}
+      },
+      "required": ["profile", "action_id", "destination", "requested_scope", "nonce"]
+    },
+    "request_digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "resolution_head": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "resolution_state": {"enum": ["SURVIVED", "NARROWED", "FAILED", "UNRESOLVED"]},
+    "authority_state": {"enum": ["AUTHORIZED", "UNAUTHORIZED", "UNRESOLVED"]},
+    "lineage_integrity": {"const": "PASS"},
+    "action_policy_digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "decision": {"enum": ["PERMIT", "DENY", "HOLD"]},
+    "reason": {"type": "string", "minLength": 1, "maxLength": 2048}
+  },
+  "required": [
+    "profile",
+    "request",
+    "request_digest",
+    "resolution_head",
+    "resolution_state",
+    "authority_state",
+    "lineage_integrity",
+    "action_policy_digest",
+    "decision",
+    "reason"
+  ]
+}
