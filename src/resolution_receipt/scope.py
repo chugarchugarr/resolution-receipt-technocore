@@ -61,3 +61,31 @@ def scope_contains(
     if result is None or result == "UNRESOLVED":
         return "UNRESOLVED"
     raise ReceiptError("scope adapter returned an invalid containment state")
+
+
+def validate_scope_transition(
+    original_scope: Any,
+    effective_scope: Any,
+    *,
+    resolution_state: str,
+    adapters: Mapping[str, ScopeAdapter] | None = None,
+) -> str:
+    """Require effective machine scope to be no broader than original scope.
+
+    RLP-1 derives NARROWED from the human-readable target. RLP-2 must not allow
+    the machine-readable scope to contradict that direction. Any changed scope
+    must be provably contained in the original scope, and a surviving target
+    cannot silently carry a changed machine scope.
+    """
+    original = validate_scope(original_scope)
+    effective = validate_scope(effective_scope)
+    if original == effective:
+        return "TRUE"
+    containment = scope_contains(original, effective, adapters=adapters)
+    if containment == "FALSE":
+        raise ReceiptError("effective_scope exceeds original_scope")
+    if containment != "TRUE":
+        raise ReceiptError("effective_scope containment cannot be established")
+    if resolution_state == "SURVIVED":
+        raise ReceiptError("changed effective_scope requires a NARROWED resolution target")
+    return containment
