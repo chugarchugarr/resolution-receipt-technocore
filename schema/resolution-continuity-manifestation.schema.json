@@ -1,0 +1,62 @@
+{
+  "$id": "https://github.com/chugarchugarr/resolution-receipt-technocore/schema/resolution-continuity-manifestation.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Resolution Continuity manifestation payload",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "profile": {"const": "resolution-continuity-1"},
+    "decision_digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "request_digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "destination": {"type": "string", "minLength": 1, "maxLength": 512},
+    "evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "kind": {"type": "string", "minLength": 1, "maxLength": 80},
+        "digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+        "uri": {
+          "anyOf": [
+            {"type": "string", "minLength": 1, "maxLength": 2048},
+            {"type": "null"}
+          ]
+        }
+      },
+      "required": ["kind", "digest", "uri"]
+    },
+    "verification_spec": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "method": {"type": "string", "minLength": 1, "maxLength": 160},
+        "method_digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+        "claims": {"type": "object"}
+      },
+      "required": ["method", "method_digest", "claims"]
+    },
+    "verification_result": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "method": {"type": "string", "minLength": 1, "maxLength": 160},
+        "method_digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+        "claims_digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+        "result": {"enum": ["VERIFIED", "INVALID", "UNRESOLVED"]}
+      },
+      "required": ["method", "method_digest", "claims_digest", "result"]
+    },
+    "manifestation_state": {"enum": ["MANIFESTED", "UNRESOLVED"]},
+    "policy_relation": {"enum": ["COMPLIANT", "VIOLATION", "UNRESOLVED"]}
+  },
+  "required": [
+    "profile",
+    "decision_digest",
+    "request_digest",
+    "destination",
+    "evidence",
+    "verification_spec",
+    "verification_result",
+    "manifestation_state",
+    "policy_relation"
+  ]
+}
