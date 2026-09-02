@@ -43,12 +43,21 @@ from .rlp2 import (
     RLP2_KIND,
     RLP2_PROFILE,
     sign_rlp2_resolution,
+    verify_and_decide_action,
+    verify_and_decide_action_heads,
+    verify_rlp2_heads,
     verify_rlp2_lineage,
     verify_rlp2_resolution,
 )
-from .scope import SCOPE_STATES, scope_contains, validate_scope
+from .scope import (
+    SCOPE_STATES,
+    scope_contains,
+    validate_scope,
+    validate_scope_transition,
+)
 from .verification import (
     VERIFICATION_STATES,
+    adapter_code_digest,
     recompute_verification_results,
     verify_evidence_set,
 )
@@ -67,6 +76,7 @@ __all__ = [
     "SCOPE_STATES",
     "VERIFICATION_STATES",
     "action_policy_digest",
+    "adapter_code_digest",
     "authority_policy_digest",
     "build_resolution_payload",
     "canonical_bytes",
@@ -88,11 +98,15 @@ __all__ = [
     "validate_action_policy",
     "validate_authority_policy",
     "validate_scope",
+    "validate_scope_transition",
+    "verify_and_decide_action",
+    "verify_and_decide_action_heads",
     "verify_bundle",
     "verify_envelope",
     "verify_evidence_set",
     "verify_resolution",
     "verify_resolution_lineage",
+    "verify_rlp2_heads",
     "verify_rlp2_lineage",
     "verify_rlp2_resolution",
     "verify_technocore_record",
