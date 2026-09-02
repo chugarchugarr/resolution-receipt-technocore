@@ -1,5 +1,13 @@
 """Resolution Receipt public verification primitives."""
 
+from .authority import (
+    AUTHORITY_MODES,
+    AUTHORITY_POLICY_VERSION,
+    AUTHORITY_STATES,
+    authority_policy_digest,
+    derive_authority_state,
+    validate_authority_policy,
+)
 from .core import (
     PROTOCOL,
     canonical_bytes,
@@ -15,6 +23,13 @@ from .core import (
     verify_envelope,
     verify_technocore_record,
 )
+from .policy import (
+    ACTION_POLICY_VERSION,
+    ACTION_STATES,
+    action_policy_digest,
+    derive_action_decision,
+    validate_action_policy,
+)
 from .resolution import (
     RESOLUTION_KIND,
     RESOLUTION_STATES,
@@ -24,26 +39,61 @@ from .resolution import (
     verify_resolution,
     verify_resolution_lineage,
 )
+from .rlp2 import (
+    RLP2_KIND,
+    RLP2_PROFILE,
+    sign_rlp2_resolution,
+    verify_rlp2_lineage,
+    verify_rlp2_resolution,
+)
+from .scope import SCOPE_STATES, scope_contains, validate_scope
+from .verification import (
+    VERIFICATION_STATES,
+    recompute_verification_results,
+    verify_evidence_set,
+)
 
 __all__ = [
+    "ACTION_POLICY_VERSION",
+    "ACTION_STATES",
+    "AUTHORITY_MODES",
+    "AUTHORITY_POLICY_VERSION",
+    "AUTHORITY_STATES",
     "PROTOCOL",
     "RESOLUTION_KIND",
     "RESOLUTION_STATES",
+    "RLP2_KIND",
+    "RLP2_PROFILE",
+    "SCOPE_STATES",
+    "VERIFICATION_STATES",
+    "action_policy_digest",
+    "authority_policy_digest",
     "build_resolution_payload",
     "canonical_bytes",
     "create_key",
     "decode_technocore_record_text",
+    "derive_action_decision",
+    "derive_authority_state",
     "derive_resolution_state",
     "did_from_private_key",
     "hash_object",
     "load_json",
     "policy_commitment",
+    "recompute_verification_results",
+    "scope_contains",
     "sign_envelope",
     "sign_resolution",
+    "sign_rlp2_resolution",
     "technocore_record_request",
+    "validate_action_policy",
+    "validate_authority_policy",
+    "validate_scope",
     "verify_bundle",
     "verify_envelope",
+    "verify_evidence_set",
     "verify_resolution",
     "verify_resolution_lineage",
+    "verify_rlp2_lineage",
+    "verify_rlp2_resolution",
     "verify_technocore_record",
 ]
