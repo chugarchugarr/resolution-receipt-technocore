@@ -1,0 +1,23 @@
+{
+  "$id": "https://github.com/chugarchugarr/resolution-receipt-technocore/schema/resolution-continuity-action-request.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Resolution Continuity action-request object",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "profile": {"const": "resolution-continuity-1"},
+    "action_id": {"type": "string", "minLength": 1, "maxLength": 160},
+    "destination": {"type": "string", "minLength": 1, "maxLength": 512},
+    "requested_scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "adapter": {"type": "string", "minLength": 1, "maxLength": 160},
+        "value": {}
+      },
+      "required": ["adapter", "value"]
+    },
+    "nonce": {"type": "string", "minLength": 1, "maxLength": 256}
+  },
+  "required": ["profile", "action_id", "destination", "requested_scope", "nonce"]
+}
