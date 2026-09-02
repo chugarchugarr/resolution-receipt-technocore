@@ -44,6 +44,12 @@ from .policy import (
     derive_action_decision,
     validate_action_policy,
 )
+from .reentry import (
+    CONTINUITY_RECEIPT_METHOD,
+    continuity_receipt_adapter,
+    continuity_receipt_evidence,
+    continuity_receipt_verification_spec,
+)
 from .resolution import (
     RESOLUTION_KIND,
     RESOLUTION_STATES,
@@ -84,6 +90,7 @@ __all__ = [
     "AUTHORITY_POLICY_VERSION",
     "AUTHORITY_STATES",
     "CONTINUITY_PROFILE",
+    "CONTINUITY_RECEIPT_METHOD",
     "MANIFESTATION_KIND",
     "MANIFESTATION_STATES",
     "POLICY_RELATIONS",
@@ -100,6 +107,9 @@ __all__ = [
     "build_action_request",
     "build_resolution_payload",
     "canonical_bytes",
+    "continuity_receipt_adapter",
+    "continuity_receipt_evidence",
+    "continuity_receipt_verification_spec",
     "create_key",
     "decode_technocore_record_text",
     "derive_action_decision",
