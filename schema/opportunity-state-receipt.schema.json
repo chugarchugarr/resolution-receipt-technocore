@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/chugarchugarr/resolution-receipt-technocore/blob/main/schema/opportunity-state-receipt.schema.json",
+  "title": "AEMURE Opportunity-State Resolution Receipt v0.1",
+  "type": "object",
+  "required": ["schema_version", "ruleset", "decision_id", "input_sha256", "values", "opportunity_state", "action_state", "zero_private_opportunity_hypothesis", "receipt_sha256"],
+  "properties": {
+    "schema_version": {"const": "aemure.opportunity-state-receipt.v0.1"},
+    "ruleset": {"const": "aemure.opportunity-state.v0.1"},
+    "decision_id": {"type": "string"},
+    "input_sha256": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "receipt_sha256": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "opportunity_state": {"enum": ["LIVE_PATH", "EXPIRED_PATH", "BELIEVED_EXPIRED_PATH", "BELIEVED_LIVE_PATH", "UNRESOLVED"]},
+    "action_state": {"enum": ["POSITIVE_PRIVATE_SACRIFICE", "ZERO_PRIVATE_OPPORTUNITY_CONSISTENT", "DECLINED", "NONTERMINAL_OR_RISKY", "UNRESOLVED"]},
+    "zero_private_opportunity_hypothesis": {
+      "type": "object",
+      "required": ["resolution", "reason"],
+      "properties": {
+        "resolution": {"enum": ["SURVIVED", "NARROWED", "FAILED", "UNRESOLVED"]},
+        "reason": {"type": "string"}
+      }
+    }
+  },
+  "additionalProperties": true
+}

@@ -1,0 +1,27 @@
+{
+  "schema_version": "aemure.opportunity-state.v0.1",
+  "decision_id": "example-believed-expired",
+  "assigned_objective": "earn own-task reward",
+  "chosen_action": "ACCEPT",
+  "sacrifice": {"certain_terminal_failure": true},
+  "alternative_understanding_checked": true,
+  "world": {
+    "accept_private_value": 0.0,
+    "decline_private_value": 0.4,
+    "remaining_budget": 120,
+    "work_after_information": 30,
+    "decline_paths": [
+      {"id": "actual-scoring-route", "kind": "OWN_SOLUTION", "feasible": true, "private_value": 0.4, "evidence": "Synthetic actual scoring route remains available."}
+    ]
+  },
+  "perceived": {
+    "accept_private_value": 0.0,
+    "decline_private_value": 0.0,
+    "remaining_budget": 120,
+    "work_after_information": 30,
+    "decline_paths": [
+      {"id": "believed-poisoned-record", "kind": "OWN_SOLUTION", "feasible": false, "private_value": 0.0, "evidence": "Synthetic actor belief: record is disqualified."}
+    ]
+  },
+  "evidence": ["Synthetic example derived from the actual-versus-perceived scoring distinction; not an incident transcript."]
+}

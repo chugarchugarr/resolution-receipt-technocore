@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/chugarchugarr/resolution-receipt-technocore/blob/main/schema/opportunity-state.schema.json",
+  "title": "AEMURE Opportunity-State Decision History v0.1",
+  "type": "object",
+  "required": ["schema_version", "decision_id", "assigned_objective", "chosen_action", "sacrifice", "alternative_understanding_checked", "world", "perceived"],
+  "properties": {
+    "schema_version": {"const": "aemure.opportunity-state.v0.1"},
+    "decision_id": {"type": "string", "minLength": 1},
+    "assigned_objective": {"type": "string", "minLength": 1},
+    "chosen_action": {"enum": ["ACCEPT", "DECLINE"]},
+    "sacrifice": {
+      "type": "object",
+      "required": ["certain_terminal_failure"],
+      "properties": {"certain_terminal_failure": {"type": ["boolean", "null"]}},
+      "additionalProperties": true
+    },
+    "alternative_understanding_checked": {"type": ["boolean", "null"]},
+    "world": {"$ref": "#/$defs/privateState"},
+    "perceived": {"$ref": "#/$defs/privateState"},
+    "evidence": {"type": "array", "items": {"type": ["string", "object"]}}
+  },
+  "$defs": {
+    "privateState": {
+      "type": "object",
+      "required": ["accept_private_value", "decline_private_value"],
+      "properties": {
+        "accept_private_value": {"type": ["number", "null"], "minimum": 0},
+        "decline_private_value": {"type": ["number", "null"], "minimum": 0},
+        "remaining_budget": {"type": ["number", "null"], "minimum": 0},
+        "work_after_information": {"type": ["number", "null"], "minimum": 0},
+        "decline_paths": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {"type": "string"},
+              "kind": {"enum": ["OWN_SOLUTION", "INCOMING_INFORMATION", "REPLACEMENT", "OTHER"]},
+              "feasible": {"type": ["boolean", "null"]},
+              "private_value": {"type": ["number", "null"], "minimum": 0},
+              "evidence": {"type": ["string", "array", "object", "null"]}
+            },
+            "additionalProperties": true
+          }
+        }
+      },
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": true
+}
